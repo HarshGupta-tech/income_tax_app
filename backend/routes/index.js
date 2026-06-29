@@ -11,43 +11,48 @@ const {
   updateUserRole, createUser,
   getAllTaxCalculations, getFinancialYears: adminGetFY, addFinancialYear, updateFinancialYear,
 } = require('../controllers/adminController');
+const {
+  registerValidation, loginValidation, updateProfileValidation,
+  incomeValidation, deductionValidation, calculateTaxValidation,
+  userRoleValidation, financialYearValidation
+} = require('../middleware/validator');
 
 // Auth routes
-router.post('/auth/register', register);
-router.post('/auth/login', login);
+router.post('/auth/register', registerValidation, register);
+router.post('/auth/login', loginValidation, login);
 router.get('/auth/profile', auth, getProfile);
-router.put('/auth/profile', auth, updateProfile);
+router.put('/auth/profile', auth, updateProfileValidation, updateProfile);
 
 // Financial years (public)
 router.get('/financial-years', auth, getFinancialYears);
 
 // Income routes (protected)
 router.get('/income', auth, getIncomeSources);
-router.post('/income', auth, addIncomeSource);
-router.put('/income/:id', auth, updateIncomeSource);
+router.post('/income', auth, incomeValidation, addIncomeSource);
+router.put('/income/:id', auth, incomeValidation, updateIncomeSource);
 router.delete('/income/:id', auth, deleteIncomeSource);
 
 // Deduction routes (protected)
 router.get('/deductions', auth, getDeductions);
-router.post('/deductions', auth, addDeduction);
-router.put('/deductions/:id', auth, updateDeduction);
+router.post('/deductions', auth, deductionValidation, addDeduction);
+router.put('/deductions/:id', auth, deductionValidation, updateDeduction);
 router.delete('/deductions/:id', auth, deleteDeduction);
 
 // Tax calculation routes (protected)
-router.post('/tax/calculate', auth, calculateTax);
+router.post('/tax/calculate', auth, calculateTaxValidation, calculateTax);
 router.get('/tax/history', auth, getSavedCalculation);
 router.get('/tax/dashboard', auth, getDashboardSummary);
 
 // ─── Admin routes (auth + admin role required) ───
 router.get('/admin/dashboard', auth, adminAuth, getDashboardStats);
 router.get('/admin/users', auth, adminAuth, getAllUsers);
-router.post('/admin/users', auth, adminAuth, createUser);
+router.post('/admin/users', auth, adminAuth, registerValidation, createUser);
 router.get('/admin/users/:id', auth, adminAuth, getUserDetails);
-router.put('/admin/users/:id/role', auth, adminAuth, updateUserRole);
+router.put('/admin/users/:id/role', auth, adminAuth, userRoleValidation, updateUserRole);
 router.delete('/admin/users/:id', auth, adminAuth, deleteUser);
 router.get('/admin/tax-calculations', auth, adminAuth, getAllTaxCalculations);
 router.get('/admin/financial-years', auth, adminAuth, adminGetFY);
-router.post('/admin/financial-years', auth, adminAuth, addFinancialYear);
-router.put('/admin/financial-years/:id', auth, adminAuth, updateFinancialYear);
+router.post('/admin/financial-years', auth, adminAuth, financialYearValidation, addFinancialYear);
+router.put('/admin/financial-years/:id', auth, adminAuth, financialYearValidation, updateFinancialYear);
 
 module.exports = router;

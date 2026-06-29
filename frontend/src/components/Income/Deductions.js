@@ -1,12 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import API from '../../utils/api';
 import { formatCurrency, DEDUCTION_SECTIONS } from '../../utils/helpers';
+import { validatePositiveAmount } from '../../utils/validation';
 
 function DeductionModal({ open, onClose, onSave, financialYears, editData }) {
   const [form, setForm] = useState({ financial_year_id: '', section: '80C', description: '', amount: '' });
   const [loading, setLoading] = useState(false);
+  const [error, setError] = useState('');
 
   useEffect(() => {
+    setError('');
     if (editData) {
       setForm({ financial_year_id: editData.financial_year_id, section: editData.section, description: editData.description || '', amount: editData.amount });
     } else {
@@ -20,6 +23,10 @@ function DeductionModal({ open, onClose, onSave, financialYears, editData }) {
 
   const handleSubmit = async e => {
     e.preventDefault();
+    setError('');
+    if (!form.financial_year_id) return setError('Please select a financial year.');
+    if (!validatePositiveAmount(form.amount)) return setError('Amount must be a positive number.');
+
     setLoading(true);
     try {
       if (editData) {
@@ -29,7 +36,7 @@ function DeductionModal({ open, onClose, onSave, financialYears, editData }) {
       }
       onSave();
     } catch (err) {
-      alert(err.response?.data?.message || 'Error saving deduction.');
+      setError(err.response?.data?.message || 'Error saving deduction.');
     } finally {
       setLoading(false);
     }
@@ -44,6 +51,7 @@ function DeductionModal({ open, onClose, onSave, financialYears, editData }) {
         </div>
         <form onSubmit={handleSubmit}>
           <div className="modal-body">
+            {error && <div className="alert alert-error">{error}</div>}
             <div className="form-group">
               <label className="form-label">Financial Year</label>
               <select className="form-control" value={form.financial_year_id}

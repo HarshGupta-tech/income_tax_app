@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { validateEmail, validatePassword, validatePan, validatePhone } from '../../utils/validation';
 
 export default function Register() {
   const { register } = useAuth();
@@ -17,12 +18,14 @@ export default function Register() {
   const handleSubmit = async e => {
     e.preventDefault();
     setError('');
-    if (form.password !== form.confirm_password) {
-      return setError('Passwords do not match.');
-    }
-    if (form.password.length < 6) {
-      return setError('Password must be at least 6 characters.');
-    }
+    
+    if (!form.full_name.trim()) return setError('Full name is required.');
+    if (!validateEmail(form.email)) return setError('Please enter a valid email address.');
+    if (form.phone && !validatePhone(form.phone)) return setError('Please enter a valid phone number.');
+    if (form.pan_number && !validatePan(form.pan_number)) return setError('Please enter a valid PAN number.');
+    if (!validatePassword(form.password)) return setError('Password must be at least 6 characters.');
+    if (form.password !== form.confirm_password) return setError('Passwords do not match.');
+
     setLoading(true);
     try {
       await register(form);
@@ -33,6 +36,7 @@ export default function Register() {
       setLoading(false);
     }
   };
+
 
   return (
     <div className="auth-page">

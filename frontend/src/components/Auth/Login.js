@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { useAuth } from '../../context/AuthContext';
+import { validateEmail } from '../../utils/validation';
 
 export default function Login() {
   const { login } = useAuth();
@@ -14,8 +15,13 @@ export default function Login() {
   const handleSubmit = async e => {
     e.preventDefault();
     setError('');
+
+    if (!validateEmail(form.email)) return setError('Please enter a valid email address.');
+    if (!form.password) return setError('Please enter your password.');
+
     setLoading(true);
     try {
+
       await login(form.email, form.password);
       navigate('/dashboard');
     } catch (err) {
