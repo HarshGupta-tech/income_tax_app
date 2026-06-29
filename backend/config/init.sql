@@ -85,3 +85,9 @@ CREATE TABLE IF NOT EXISTS tax_calculations (
 CREATE INDEX idx_income_user_fy ON income_sources(user_id, financial_year_id);
 CREATE INDEX idx_deductions_user_fy ON deductions(user_id, financial_year_id);
 CREATE INDEX idx_tax_calc_user_fy ON tax_calculations(user_id, financial_year_id);
+
+-- Indexes for Admin Dashboard and sorting
+CREATE INDEX idx_users_role ON users(role);
+CREATE INDEX idx_income_user_created ON income_sources(user_id, created_at);
+CREATE INDEX idx_deductions_user_created ON deductions(user_id, created_at);
+CREATE INDEX idx_tax_calc_user_calc_date ON tax_calculations(user_id, calculated_at);
