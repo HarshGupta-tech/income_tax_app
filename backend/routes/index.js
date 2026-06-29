@@ -16,10 +16,11 @@ const {
   incomeValidation, deductionValidation, calculateTaxValidation,
   userRoleValidation, financialYearValidation
 } = require('../middleware/validator');
+const { authLimiter } = require('../middleware/rateLimiter');
 
 // Auth routes
-router.post('/auth/register', registerValidation, register);
-router.post('/auth/login', loginValidation, login);
+router.post('/auth/register', authLimiter, registerValidation, register);
+router.post('/auth/login', authLimiter, loginValidation, login);
 router.get('/auth/profile', auth, getProfile);
 router.put('/auth/profile', auth, updateProfileValidation, updateProfile);
 

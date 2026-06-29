@@ -3,6 +3,7 @@ const cors = require('cors');
 require('dotenv').config();
 
 const routes = require('./routes/index');
+const { globalLimiter } = require('./middleware/rateLimiter');
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -13,6 +14,7 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
 // Routes
+app.use('/api', globalLimiter);
 app.use('/api', routes);
 
 // Health check
